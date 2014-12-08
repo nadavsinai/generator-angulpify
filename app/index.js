@@ -18,56 +18,85 @@ function copyFromGlob(generator, paths) {
   });
 }
 
-var AngulpifyGenerator = module.exports = yeoman.generators.Base.extend({
+module.exports = yeoman.generators.Base.extend({
+  initializing: function () {
+    this.pkg = require('../package.json');
+  },
+
   constructor: function () {
     yeoman.generators.Base.apply(this, arguments);
+
     this.option('skip-install', {desc: 'Skip the bower and node installations'});
+
+    this.option('test-framework', {
+      desc: 'Test framework to be invoked',
+      type: String,
+      defaults: 'mocha'
+    });
   },
-  initializing: function () {},
+
   prompting: function () {
     var done = this.async();
     var welcomeMessage = 'Out of the box I include '+ chalk.red('AngularJS')+', '+chalk.red('Gulp')+' and '+chalk.red('Browserify')+' to build your app.';
     this.log(yosay(welcomeMessage));
+
     var prompts = [
       {
-        type: 'input', name: 'project', message: 'What\'s your project name?',
+        type: 'input',
+        name: 'project',
+        message: 'What\'s your project name?',
         default: this.appname
-      },
-      {
-        type: 'list', name: 'scripts', message: 'Would you like to use a language other than JavaScript?',
-        choices: [
-          {name: 'Nop, JavaScript please.', value: {name: 'js', extensions: '.js'}}
-        ],
-        default: 0
       },
       {
         type: 'list', name: 'styles', message: 'Would you like to use a preprocessor?',
         choices: [
-          {name: 'Less', value: {name: 'less', extensions: '.less'}},
-          {name: 'Sass', value: {name: 'sass', extensions: '.scss'}},
-          {name: 'Nop, CSS please.', value: {name: 'css', extensions: '.css'}},
+          {name: 'Less', value: 'less'},
+          {name: 'Sass', value: 'sass'},
+          {name: 'Nop, CSS please.', value: 'css'}
         ],
         default: 2
       },
       {
-        type: 'list', name: 'templates', message: 'Would you like to use a template engine?',
+        type: 'list',
+        name: 'templates',
+        message: 'Would you like to use a template engine?',
         choices: [
-          {name: 'Jade', value: {name: 'jade', extensions: '.jade'}},
-          {name: 'Nop. HTML please.', value: {name: 'html', extensions: '.html'}}
+          {name: 'Jade', value: 'jade'},
+          {name: 'Nop. HTML please.', value: 'html'}
         ],
         default: 1
       }
     ];
 
     this.prompt(prompts, function (answers) {
+
       this.project = answers.project.trim().replace(/\s+/g, '-').toLowerCase();
-      this.scripts = answers.scripts;
-      this.styles = answers.styles;
-      this.templates = answers.templates;
+
+      //TODO: Refactor the way extension names are handled
+      // Umba-wamba to keep things working after prompts changes.
+
+      this.scripts = {name: 'js', extensions: '.js'};
+
+      if(answers.styles === 'less'){
+        this.styles = {name: 'less', extensions: '.less'};
+      }else if(answers.styles === 'sass'){
+        this.styles = {name: 'sass', extensions: '.scss'};
+      }else{
+        this.styles = {name: 'css', extensions: '.css'};
+      }
+
+      if(answers.templates === 'jade'){
+        this.templates = {name: 'jade', extensions: '.jade'};
+      }else{
+        this.templates = {name: 'html', extensions: '.html'};
+      }
+
       done();
     }.bind(this));
   },
+
   configuring: function () {
+
     // Scripts
     this.isJs = function () { return this.scripts.name === 'js'; };
     // Styles

@@ -2,116 +2,111 @@
 'use strict';
 
 var path = require('path');
-var helpers = require('yeoman-generator').test;
 var assert = require('yeoman-generator').assert;
+var helpers = require('yeoman-generator').test;
+var os = require('os');
 
 describe('angulpify: default features (javascript/css/html)', function () {
 
-  var mockPrompts = {
-    projectName: 'angulpify',
-    language: 'includeJavaScript',
-    preprocessor: 'includeCss',
-    templateEngine: 'includeHtml',
-    goodies: []
+  // not testing the actual run of generators yet
+  it('the generator can be required without throwing', function () {
+    this.app = require('../app');
+  });
+
+  var promptOptions = {
+    project: 'angulpify',
+    styles: 'css',
+    templates: 'html'
+  }
+
+  var options = {
+    'skip-install-message': true,
+    'skip-install': true,
+    'skip-welcome-message': true,
+    'skip-message': true
   };
 
-  beforeEach(function (done) {
-    helpers.testDirectory(path.join(__dirname, 'tmp'), function (err) {
-      if (err) {
-        return done(err);
-      }
-      this.angulpify = helpers.createGenerator('angulpify:app', ['../../generators/app']);
-      this.angulpify.options['skip-install'] = true;
-      this.angulpify.options['skip-welcome-message'] = true;
-
-      helpers.mockPrompt(this.angulpify, mockPrompts);
-
-      done();
-    }.bind(this));
+  before(function (done) {
+    helpers.run(path.join(__dirname, '../app'))
+      .inDir(path.join(os.tmpdir(), './temp-test'))
+      .withOptions(options)
+      .withPrompt(promptOptions)
+      .on('end', done);
   });
 
-  it('can be imported without blowing up', function () {
-    this.app = require('../generators/app');
-    assert(this.app !== undefined);
-  });
 
-  it('creates expected config files', function (done) {
-    var expected = [
-      '.editorconfig',
-      '.gitignore',
-      '.jshintrc',
-      '.yo-rc.json'
-    ];
-    this.angulpify.run({}, function () {
+  it('creates expected config files', function () {
+
+      var expected = [
+        '.editorconfig',
+        '.gitignore',
+        '.jshintrc',
+        '.yo-rc.json'
+      ];
+
       assert.file(expected);
-      done();
-    });
   });
 
-  it('creates expected gulp files', function (done) {
+
+  it('creates expected gulp files', function () {
     var expected = [
       'gulpfile.js',
       'gulp/config.js',
-      'gulp/index.js',
+      'gulp/utilities.js',
       'gulp/tasks/assets.js',
-      'gulp/tasks/browserify.js',
+      'gulp/tasks/browserify-app.js',
+      'gulp/tasks/browserify-vendors.js',
       'gulp/tasks/clean.js',
       'gulp/tasks/default.js',
-      'gulp/tasks/images.js',
+     // 'gulp/tasks/images.js',
       'gulp/tasks/index.js',
       'gulp/tasks/lint.js',
-      'gulp/tasks/minify.js',
+      //'gulp/tasks/minify.js',
       'gulp/tasks/serve.js',
       'gulp/tasks/styles.js',
       'gulp/tasks/templates.js',
       'gulp/tasks/watch.js',
-      'gulp/tasks/watchify.js'
+      //'gulp/tasks/watchify.js'
     ];
-    this.angulpify.run({}, function () {
-      assert.file(expected);
-      done();
-    });
+
+    assert.file(expected);
   });
 
-  it('creates expected script files', function (done) {
+  it('creates expected script files', function () {
     var expected = [
-      'src/modules/index.js',
-      'src/modules/app/foo/fooController.js',
-      'src/modules/app/foo/index.js',
-      'src/modules/app/index.js',
-      'src/modules/common/directives/fooDirective.js',
-      'src/modules/common/directives/index.js',
-      'src/modules/common/filters/fooFilter.js',
-      'src/modules/common/filters/index.js',
-      'src/modules/common/services/fooService.js',
-      'src/modules/common/services/index.js',
-      'src/modules/common/index.js'
+      'src/scripts/app/app.config.js',
+      'src/scripts/app/app.module.js',
+      'src/scripts/app/vendors.js',
+      'src/scripts/app/core/core.module.js',
+      'src/scripts/app/layout/layout.config.js',
+      'src/scripts/app/layout/layout.module.js',
+      'src/scripts/app/welcome/welcome.config.js',
+      'src/scripts/app/welcome/welcome.controller.js',
+      'src/scripts/app/welcome/welcome.module.js'
     ];
-    this.angulpify.run({}, function () {
-      assert.file(expected);
-      done();
-    });
+
+    assert.file(expected);
+
   });
 
-  it('creates expected style files', function (done) {
+  it('creates expected style files', function () {
     var expected = [
-      'src/styles/app.css'
+      'src/styles/layout.css',
+      'src/styles/main.css'
     ];
-    this.angulpify.run({}, function () {
-      assert.file(expected);
-      done();
-    });
+
+    assert.file(expected);
+
   });
 
-  it('creates expected template files', function (done) {
+  it('creates expected template files', function () {
     var expected = [
-      'src/index.html',
-      'src/modules/app/foo/layout.html'
+      'src/scripts/index.html',
+      'src/scripts/app/layout/layout.html',
+      'src/scripts/app/welcome/welcome.html'
     ];
-    this.angulpify.run({}, function () {
-      assert.file(expected);
-      done();
-    });
+
+    assert.file(expected);
   });
 
 });
