@@ -35,7 +35,7 @@ var configuration = {
   assets: {
     src: path.join(src, assets, '**/*'),
     imagesFilter: path.join(assets_images, '**/*'),
-    imagemin: {optimizationLevel: 5, progressive: true, interlaced: true},
+    imagemin: { optimizationLevel: 5, progressive: true, interlaced: true },
     dest: path.join(dest, assets)
   },
   browserify: {
@@ -86,120 +86,53 @@ var configuration = {
       ignorePath: path.join(dest),
       addRootSlash: false
     },
-  < % if (isHtml())
-{ %>
-  minifyHtml < %
-}
-else
-if (isJade()) { %>
-  jade < %
-}
-%>:
-{
-}
-,
+  <% if (isHtml()) { %>minifyHtml<% } else if (isJade()) { %>jade<% } %>: {},
 dest: dest
 },
 lint: {
   src: path.join(src, '**/*<%=scripts.extensions%>')
-}
-,
+},
 serve: {
   browserSync: {
-    server: {
-      baseDir: dest
-    }
-  ,
+    server: {baseDir: dest},
     open: false
   }
-}
-,
+},
 styles: {
   src: path.join(src, styles, styles_main),
-    basename
-:
-  styles_output,
-    autoprefixer
-:
-  {
-    browsers: ['last 2 versions']
-  }
-,
-<%
-  if (isSass()) { %>
-    sass: {
-      sourcemap: utilities.env.isDev(),
-        style
-    :
-      'compressed'
-    }
-  ,<%
-  } else if (isLess()) { %>
-    less: {
-    }
-  ,<%
-  }
-%>
+    basename: styles_output,
+    autoprefixer: {browsers: ['last 2 versions']},
+<% if (isSass()) { %>sass: {
+    sourcemap: utilities.env.isDev(),
+      style: 'compressed'
+  },<% } else if (isLess()) { %>less: {},<% } %>
   dest: dest
-}
-,
+},
 templates: {
   src: path.join(src, scripts, scripts_app, '**/*<%=templates.extensions%>'),
-<%
-  if (isHtml()) { %>
-    minifyHTML < %
-  } else if (isJade()) { %>
-    jade < %
-  }
-%>:
-  {
-  }
-,
+<% if (isHtml()) { %>minifyHTML<% } else if (isJade()) { %>jade<% } %>: {},
   templateCache: {
     filename: tmp_templates_output,
-      options
-  :
-    {
+      options: {
       moduleSystem: 'Browserify',
-        standalone
-    :
-      true,
-        module
-    :
-      tmp_templates_module,
-        base
-    :
-      function (file) {
+        standalone: true,
+        module: tmp_templates_module,
+        base: function (file) {
         return path.basename(file.relative);
       }
     }
-  }
-,
+  },
   dest: tmp
-}
-,
+},
 watch: {
   lint: path.join(src, scripts, scripts_app, '**/*<%=scripts.extensions%>'),
-    index
-:
-  path.join(src, scripts, scripts_index),
-    config
-:
-  path.join(src, scripts, scripts_config),
-    templates
-:
-  path.join(src, scripts, scripts_app, '**/*<%=templates.extensions%>'),
-    styles
-:
-  path.join(src, styles, '**/*<%=styles.extensions%>'),
-    styles_output
-:
-  styles_output + '.min.css',
-    reload
-:
-  path.join(dest, '**/*.{js,html}')
+    index: path.join(src, scripts, scripts_index),
+    config: path.join(src, scripts, scripts_config),
+    templates: path.join(src, scripts, scripts_app, '**/*<%=templates.extensions%>'),
+    styles: path.join(src, styles, '**/*<%=styles.extensions%>'),
+    styles_output: styles_output + '.min.css',
+    reload: path.join(dest, '**/*.{js,html}')
 }
-}
-;
+};
 
 module.exports = configuration;
