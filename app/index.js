@@ -55,16 +55,6 @@ module.exports = yeoman.generators.Base.extend({
           {name: 'Nop, CSS please.', value: 'css'}
         ],
         default: 2
-      }, {
-        when: function (answers) {
-          return answers && answers.styles && answers.styles === 'sass';
-        },
-        type: 'confirm',
-        name: 'libsass',
-        value: true,
-        message: 'Would you like to use libsass? Read up more at \n' +
-        chalk.green('https://github.com/andrew/node-sass#node-sass'),
-        default: false
       },
       {
         type: 'list',
@@ -83,9 +73,6 @@ module.exports = yeoman.generators.Base.extend({
       console.log(answers);
 
       this.project = answers.project.trim().replace(/\s+/g, '-').toLowerCase();
-
-      this.includeLibSass = answers.libsass;
-      this.includeRubySass = !answers.libsass;
 
       //TODO: Refactor the way extension names are handled
       // Umba-wamba to keep things working after prompts changes.
