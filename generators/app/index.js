@@ -190,7 +190,7 @@ var AngulpifyGenerator = module.exports = yeoman.generators.Base.extend({
       if (this.includeCoffeeScript) {
         language = {folderName: 'coffeescript'};
       } else if (this.includeTypeScript) {
-        language = {folderName: 'typescript'};
+        language = {folderName: 'javascript'};
       }
       this.directory('src/modules/'+language.folderName, 'src/modules');
 

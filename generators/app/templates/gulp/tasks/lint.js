@@ -11,7 +11,7 @@ module.exports = gulp.task('lint', function () {
   .pipe(coffeelint())
   .pipe(coffeelint.reporter())<% } else if (includeTypeScript) { %>
   .pipe(tslint())
-  .pipe(tslint.report('verbose')<% } else { %>
+  .pipe(tslint.report('verbose'))<% } else { %>
   .pipe(jshint())
   .pipe(jshint.reporter(stylish))<% } %>;
 });
